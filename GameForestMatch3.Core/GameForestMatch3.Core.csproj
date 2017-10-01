@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Coroutine.cs" />
+    <Compile Include="Renderer.cs" />
     <Compile Include="Sprite9SliceRenderer.cs" />
     <Compile Include="BasePage.cs" />
     <Compile Include="GameObject%28T%29.cs" />
