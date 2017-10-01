@@ -24,19 +24,19 @@ namespace GameForestMatch3.Core
                 }
             }
         }
-        public SpriteRenderer(SpriteBatch spriteBatch, string textureName) : base(spriteBatch)
+        public SpriteRenderer(RenderCache renderCache, string textureName) : base(renderCache)
         {
             Texture = Resources.Get<Texture2D>(textureName);
             Color = Color.White;
         }
 
-        public SpriteRenderer(SpriteBatch spriteBatch, Texture2D texture) : base(spriteBatch)
+        public SpriteRenderer(RenderCache renderCache, Texture2D texture) : base(renderCache)
         {
             Texture = texture;
             Color = Color.White;
         }
 
-        public SpriteRenderer(SpriteBatch spriteBatch) : base(spriteBatch)
+        public SpriteRenderer(RenderCache renderCache) : base(renderCache)
         {
             Color = Color.White;
         }
@@ -51,10 +51,9 @@ namespace GameForestMatch3.Core
 
         }
 
-        protected internal override void Draw(GameTime gameTime)
+        protected internal override void Render(SpriteBatch spriteBatch)
         {
-            _spriteBatch.Draw(Texture, Rect, null, Color, Rotation, RotationOrigin, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
+            spriteBatch.Draw(Texture, Rect, null, Color, Rotation, RotationOrigin, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
         }
-
     }
 }

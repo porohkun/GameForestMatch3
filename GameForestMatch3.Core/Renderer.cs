@@ -44,10 +44,12 @@ namespace GameForestMatch3.Core
         /// </summary>
         public SpriteEffects Effects { get; set; }
 
+        public Effect Shader { get; set; } = Resources.Get<Effect>("default");
+
         public SortingLayer SortingLayer;
         public int OrderInLayer;
 
-        public Renderer(SpriteBatch spriteBatch) : base(spriteBatch)
+        public Renderer(RenderCache renderCache) : base(renderCache)
         {
         }
 
@@ -56,5 +58,11 @@ namespace GameForestMatch3.Core
 
         }
 
+        protected internal override void Draw(GameTime gameTime)
+        {
+            RenderCache.Cache(this);
+        }
+
+        protected internal abstract void Render(SpriteBatch spriteBatch);
     }
 }

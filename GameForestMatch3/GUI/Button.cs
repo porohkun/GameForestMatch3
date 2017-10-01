@@ -62,7 +62,7 @@ namespace GameForestMatch3
         private TextRenderer _textRenderer;
         private Texture2D[] _textures;
 
-        public Button(SpriteBatch spriteBatch, string visualStyle) : base(spriteBatch)
+        public Button(RenderCache renderCache, string visualStyle) : base(renderCache)
         {
             _textures = new[]
             {
@@ -70,12 +70,12 @@ namespace GameForestMatch3
                 Resources.Get<Texture2D>(visualStyle + "-focused") ,
                 Resources.Get<Texture2D>(visualStyle + "-pressed")
             };
-            _renderer = AddComponent(new Sprite9SliceRenderer(spriteBatch, _textures[0])
+            _renderer = AddComponent(new Sprite9SliceRenderer(renderCache, _textures[0])
             {
                 SortingLayer = SortingLayer.GetLayer("gui"),
                 CenterRect = new Rectangle(16, 16, 32, 32)
             });
-            _textRenderer = AddComponent(new TextRenderer(spriteBatch, "Button")
+            _textRenderer = AddComponent(new TextRenderer(renderCache, "Button")
             {
                 SortingLayer = SortingLayer.GetLayer("gui"),
                 OrderInLayer = 1,

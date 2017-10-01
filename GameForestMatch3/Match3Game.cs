@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GameForestMatch3.Core;
 using GameForestMatch3.Utils;
 using Microsoft.Xna.Framework;
@@ -11,6 +13,9 @@ namespace GameForestMatch3
     {
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
+        RenderCache _renderCache;
+        SpriteFont font;
+        TPS tps = new TPS();
 
         public event Action<GameTime> OnUpdate;
         public event Action<GameTime> OnDraw;
@@ -46,9 +51,13 @@ namespace GameForestMatch3
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _renderCache = new RenderCache();
 
-            PageManager.CreateInstance(_spriteBatch, this);
+            PageManager.CreateInstance(_renderCache, this);
             PageManager.Push<StartPage>();
+            
+            font = Resources.Get<SpriteFont>("candara");
+            
         }
 
         protected override void UnloadContent()
@@ -69,13 +78,16 @@ namespace GameForestMatch3
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            _spriteBatch.Begin();
-
+            
             OnDraw?.Invoke(gameTime);
 
+            _renderCache.RenderCached(_spriteBatch);
+            
+            tps.Tick(gameTime.TotalGameTime);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+            _spriteBatch.DrawString(font, tps.ToString(), new Vector2(10, 10), Color.Black);
             _spriteBatch.End();
-
+            
             base.Draw(gameTime);
         }
     }

@@ -11,7 +11,7 @@ namespace GameForestMatch3.Core
     {
         private List<T> _children = new List<T>();
 
-        public GameObject(SpriteBatch spriteBatch) : base(spriteBatch)
+        public GameObject(RenderCache renderCache) : base(renderCache)
         {
         }
 

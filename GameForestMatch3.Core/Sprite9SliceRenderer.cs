@@ -30,9 +30,9 @@ namespace GameForestMatch3.Core
             }
         }
 
-        public Sprite9SliceRenderer(SpriteBatch spriteBatch, string textureName) : base(spriteBatch, textureName) { }
-        public Sprite9SliceRenderer(SpriteBatch spriteBatch, Texture2D texture) : base(spriteBatch, texture) { }
-        public Sprite9SliceRenderer(SpriteBatch spriteBatch) : base(spriteBatch) { }
+        public Sprite9SliceRenderer(RenderCache renderCache, string textureName) : base(renderCache, textureName) { }
+        public Sprite9SliceRenderer(RenderCache renderCache, Texture2D texture) : base(renderCache, texture) { }
+        public Sprite9SliceRenderer(RenderCache renderCache) : base(renderCache) { }
 
         protected virtual void OnCenterRectChanged()
         {
@@ -82,16 +82,13 @@ namespace GameForestMatch3.Core
                 }
         }
 
-        protected internal override void Draw(GameTime gameTime)
+        protected internal override void Render(SpriteBatch spriteBatch)
         {
-            if (CenterRect == Rectangle.Empty)
-                base.Draw(gameTime);
-            else
+            if (CenterRect != Rectangle.Empty)
                 for (int x = 0; x < 3; x++)
                     for (int y = 0; y < 3; y++)
-                        _spriteBatch.Draw(Texture, _destinationRects[x, y], _sourceRects[x, y], Color, Rotation,
+                        spriteBatch.Draw(Texture, _destinationRects[x, y], _sourceRects[x, y], Color, Rotation,
                             RotationOrigin, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
-
         }
     }
 }

@@ -10,13 +10,13 @@ namespace GameForestMatch3.Core
 {
     public abstract class GameObject
     {
-        protected SpriteBatch _spriteBatch;
+        protected RenderCache RenderCache;
 
         public bool Enabled { get; set; }
 
-        public GameObject(SpriteBatch spriteBatch)
+        public GameObject(RenderCache renderCache)
         {
-            _spriteBatch = spriteBatch;
+            RenderCache = renderCache;
             Enabled = true;
         }
         

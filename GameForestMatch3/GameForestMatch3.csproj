@@ -61,6 +61,7 @@
   <ItemGroup>
     <Compile Include="GUI\Button.cs" />
     <Compile Include="Match3Game.cs" />
+    <Compile Include="Pages\GamePage.cs" />
     <Compile Include="Pages\StartPage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -74,6 +75,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\default.fx" />
+    <Content Include="Content\glow.fx" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

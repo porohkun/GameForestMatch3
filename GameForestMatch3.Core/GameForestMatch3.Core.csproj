@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Coroutine.cs" />
     <Compile Include="Renderer.cs" />
+    <Compile Include="RenderCache.cs" />
     <Compile Include="Sprite9SliceRenderer.cs" />
     <Compile Include="BasePage.cs" />
     <Compile Include="GameObject%28T%29.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="SortingLayer.cs" />
     <Compile Include="SpriteRenderer.cs" />
     <Compile Include="TextRenderer.cs" />
+    <Compile Include="TPS.cs" />
     <Compile Include="Transform.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -12,7 +12,7 @@ namespace GameForestMatch3.Core
     {
         protected Rectangle _screenRect;
 
-        public BasePage(SpriteBatch spriteBatch, Point screenSize):base(spriteBatch)
+        public BasePage(RenderCache renderCache, Point screenSize):base(renderCache)
         {
             _screenRect = new Rectangle(Point.Zero, screenSize);
         }

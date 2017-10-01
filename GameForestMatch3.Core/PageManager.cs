@@ -13,7 +13,7 @@ namespace GameForestMatch3.Core
     {
         public static PageManager Instance { get; private set; }
 
-        public static PageManager CreateInstance(SpriteBatch spriteBatch, IGame game)
+        public static PageManager CreateInstance(RenderCache spriteBatch, IGame game)
         {
             Instance = new PageManager(spriteBatch, game);
             return Instance;
@@ -21,7 +21,7 @@ namespace GameForestMatch3.Core
 
         private Point _screenSize;
 
-        public PageManager(SpriteBatch spriteBatch, IGame game) : base(spriteBatch)
+        public PageManager(RenderCache renderCache, IGame game) : base(renderCache)
         {
             _screenSize = game.ScreenSize;
             game.OnUpdate += Update;
@@ -60,8 +60,8 @@ namespace GameForestMatch3.Core
         private T CreatePage<T>() where T : BasePage
         {
             var type = typeof(T);
-            var constructor = type.GetConstructor(new[] { typeof(SpriteBatch), typeof(Point) });
-            var page = constructor?.Invoke(new object[] { _spriteBatch, _screenSize }) as T;
+            var constructor = type.GetConstructor(new[] { typeof(RenderCache), typeof(Point) });
+            var page = constructor?.Invoke(new object[] { RenderCache, _screenSize }) as T;
             if (page == null)
                 throw new ArgumentNullException();
             return page;

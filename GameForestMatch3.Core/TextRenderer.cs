@@ -17,7 +17,7 @@ namespace GameForestMatch3.Core
 
         public string Text { get; set; }
 
-        public TextRenderer(SpriteBatch spriteBatch, string text) : base(spriteBatch)
+        public TextRenderer(RenderCache renderCache, string text) : base(renderCache)
         {
             Text = text;
             Color = Color.Black;
@@ -28,7 +28,7 @@ namespace GameForestMatch3.Core
 
         }
 
-        protected internal override void Draw(GameTime gameTime)
+        protected internal override void Render(SpriteBatch spriteBatch)
         {
             var size = Font.MeasureString(Text);
             var scale = Mathf.Min(Rect.Width / size.X, Rect.Height / size.Y);
@@ -36,7 +36,7 @@ namespace GameForestMatch3.Core
                 scale = Mathf.Floor(scale);
             size = size * scale;
             var position = new Vector2(Mathf.Round(Rect.X + (Rect.Width - size.X) / 2f), Mathf.Round(Rect.Y + (Rect.Height - size.Y) / 2f));
-            _spriteBatch.DrawString(Font, Text, position, Color, Rotation, RotationOrigin, scale, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
+            spriteBatch.DrawString(Font, Text, position, Color, Rotation, RotationOrigin, scale, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
         }
     }
 }
