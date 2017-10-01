@@ -11,7 +11,7 @@ namespace GameForestMatch3.Core
     public class RenderCache
     {
         private List<Renderer> _renderers = new List<Renderer>();
-        
+
         public void Cache(Renderer renderer)
         {
             if (renderer.Enabled)
@@ -20,10 +20,16 @@ namespace GameForestMatch3.Core
 
         public void RenderCached(SpriteBatch spriteBatch)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            Effect shader = null;
             foreach (var rend in _renderers.OrderBy(r => r.SortingLayer?.GetDepth(r.OrderInLayer) ?? 0f))
             {
-                rend.Shader.CurrentTechnique.Passes[0].Apply();
+                if (rend.Shader != shader)
+                {
+                    if (shader != null)
+                        spriteBatch.End();
+                    shader = rend.Shader;
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: shader);
+                }
                 rend.Render(spriteBatch);
             }
             spriteBatch.End();
