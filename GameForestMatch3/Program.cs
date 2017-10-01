@@ -17,8 +17,8 @@ namespace GameForestMatch3
         {
             using (var game = new Match3Game())
             {
-                game.Run();
                 _closeAction = game.Exit;
+                game.Run();
             }
         }
 

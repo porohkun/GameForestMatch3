@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GameForestMatch3.Core;
+using Microsoft.Xna.Framework.Input;
 
 namespace GameForestMatch3
 {
@@ -13,6 +14,7 @@ namespace GameForestMatch3
     {
         private Rectangle _rect;
         private string _font = "candara";
+        private ButtonState _state = ButtonState.Normal;
 
         public Rectangle Rect
         {
@@ -41,23 +43,34 @@ namespace GameForestMatch3
             }
         }
 
-        public ButtonState State { get; private set; }
+        public ButtonState State
+        {
+            get => _state;
+            set
+            {
+                if (_state == value) return;
+                _state = value;
+                _renderer.Texture = _textures[(int)value];
+            }
+        }
+
+        public bool Interactable { get; set; } = true;
 
         public event Action Click;
 
         private Sprite9SliceRenderer _renderer;
         private TextRenderer _textRenderer;
-        private Texture2D[] _sprites;
+        private Texture2D[] _textures;
 
         public Button(SpriteBatch spriteBatch, string visualStyle) : base(spriteBatch)
         {
-            _sprites = new[]
+            _textures = new[]
             {
                 Resources.Get<Texture2D>(visualStyle + "-normal") ,
                 Resources.Get<Texture2D>(visualStyle + "-focused") ,
                 Resources.Get<Texture2D>(visualStyle + "-pressed")
             };
-            _renderer = AddComponent(new Sprite9SliceRenderer(spriteBatch, _sprites[0])
+            _renderer = AddComponent(new Sprite9SliceRenderer(spriteBatch, _textures[0])
             {
                 SortingLayer = SortingLayer.GetLayer("gui"),
                 CenterRect = new Rectangle(16, 16, 32, 32)
@@ -68,6 +81,25 @@ namespace GameForestMatch3
                 OrderInLayer = 1,
                 Font = Resources.Get<SpriteFont>(_font)
             });
+        }
+
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            if (!Interactable) return;
+            var mouseState = Mouse.GetState();
+            if (Rect.Contains(mouseState.X, mouseState.Y))
+            {
+                if (mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Released)
+                {
+                    if (State == ButtonState.Pressed)
+                        Click?.Invoke();
+                    State = ButtonState.Focused;
+                }
+                else
+                    State = ButtonState.Pressed;
+            }
+            else
+                State = ButtonState.Normal;
         }
 
         public enum ButtonState

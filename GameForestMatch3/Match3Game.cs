@@ -1,5 +1,6 @@
 ﻿using System;
 using GameForestMatch3.Core;
+using GameForestMatch3.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,10 +32,13 @@ namespace GameForestMatch3
         protected override void Initialize()
         {
             Resources.SetContent(Content);
+            Coroutine.BindToGame(this);
+            TweenFactory.Initialize(this);
 
             SortingLayer.RegisterLayer("background", 0);
             SortingLayer.RegisterLayer("gui_back", 1);
             SortingLayer.RegisterLayer("gui", 2);
+            SortingLayer.RegisterLayer("fade", 99);
 
             base.Initialize();
         }
