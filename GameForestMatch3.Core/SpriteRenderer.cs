@@ -20,6 +20,7 @@ namespace GameForestMatch3.Core
                 if (value != _texture)
                 {
                     _texture = value;
+                    OriginRect = _texture.Bounds;
                     OnTextureChanged();
                 }
             }
@@ -53,7 +54,7 @@ namespace GameForestMatch3.Core
 
         protected internal override void Render(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Rect, null, Color, Rotation, RotationOrigin, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
+            spriteBatch.Draw(Texture, Rect.Position, (Rectangle)OriginRect, Color , Rotation, RotationOrigin, Scale, Effects, LayerDepth);
         }
     }
 }

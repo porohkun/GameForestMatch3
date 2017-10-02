@@ -35,7 +35,7 @@ namespace GameForestMatch3.Core
             if (scale > 1f)
                 scale = Mathf.Floor(scale);
             size = size * scale;
-            var position = new Vector2(Mathf.Round(Rect.X + (Rect.Width - size.X) / 2f), Mathf.Round(Rect.Y + (Rect.Height - size.Y) / 2f));
+            var position = new Vector2(Rect.X + (Rect.Width - size.X) / 2f, Rect.Y + (Rect.Height - size.Y) / 2f);
             spriteBatch.DrawString(Font, Text, position, Color, Rotation, RotationOrigin, scale, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
         }
     }

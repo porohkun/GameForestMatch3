@@ -12,11 +12,11 @@ namespace GameForestMatch3
 {
     public class Button : GameObject<GameObject>
     {
-        private Rectangle _rect;
+        private Rectf _rect;
         private string _font = "candara";
         private ButtonState _state = ButtonState.Normal;
 
-        public Rectangle Rect
+        public Rectf Rect
         {
             get => _rect;
             set
@@ -73,7 +73,7 @@ namespace GameForestMatch3
             _renderer = AddComponent(new Sprite9SliceRenderer(renderCache, _textures[0])
             {
                 SortingLayer = SortingLayer.GetLayer("gui"),
-                CenterRect = new Rectangle(16, 16, 32, 32)
+                CenterRect = new Rectf(16, 16, 32, 32)
             });
             _textRenderer = AddComponent(new TextRenderer(renderCache, "Button")
             {

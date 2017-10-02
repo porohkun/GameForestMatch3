@@ -23,29 +23,26 @@ namespace GameForestMatch3
             var renderer1 = AddComponent(new SpriteRenderer(renderCache, "background") { SortingLayer = SortingLayer.GetLayer("background") });
             renderer1.Rect = _screenRect.EnvelopeInThis(renderer1.Texture.Width, renderer1.Texture.Height);
 
-            AddComponent(new SpriteRenderer(renderCache, "field")
+            AddComponent(new Sprite9SliceRenderer(renderCache, "field")
             {
                 SortingLayer = SortingLayer.GetLayer("gui_back"),
-                Rect = new Rectangle()
-                {
-                    X = (int)((screenSize.X - 300) / 2f),
-                    Y = (int)((screenSize.Y - 250) / 2f),
-                    Width = 300,
-                    Height = 250
-                },
+                Rect = new Rectf(
+                    (int)((screenSize.X - 300) / 2f),
+                    (int)((screenSize.Y - 250) / 2f),
+                    300,
+                    250),
+                CenterRect = new Rectf(32, 32, 64, 64),
                 Color = new Color(Color.White, 0.75f)
             });
 
             _startButton = AddComponent(new Button(renderCache, "grey")
             {
                 Text = "Start",
-                Rect = new Rectangle()
-                {
-                    X = (int)((screenSize.X - 200) / 2f),
-                    Y = (int)(screenSize.Y / 2f - 75),
-                    Width = 200,
-                    Height = 50
-                },
+                Rect = new Rectf(
+                    (int)((screenSize.X - 200) / 2f),
+                    (int)(screenSize.Y / 2f - 75),
+                    200,
+                    50),
                 Interactable = false
             });
             _startButton.Click += StartButtonClick;
@@ -53,13 +50,11 @@ namespace GameForestMatch3
             _exitButton = AddComponent(new Button(renderCache, "grey")
             {
                 Text = "Exit",
-                Rect = new Rectangle()
-                {
-                    X = (int)((screenSize.X - 200) / 2f),
-                    Y = (int)(screenSize.Y / 2f + 25),
-                    Width = 200,
-                    Height = 50
-                },
+                Rect = new Rectf(
+                    (int)((screenSize.X - 200) / 2f),
+                    (int)(screenSize.Y / 2f + 25),
+                    200,
+                    50),
                 Interactable = false
             });
             _exitButton.Click += ExitButtonClick;
@@ -67,13 +62,11 @@ namespace GameForestMatch3
             _faderenderer = AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("rect"))
             {
                 SortingLayer = SortingLayer.GetLayer("fade"),
-                Rect = new Rectangle()
-                {
-                    X = 0,
-                    Y = 0,
-                    Width = screenSize.X,
-                    Height = screenSize.Y
-                },
+                Rect = new Rectf(
+                    0,
+                    0,
+                    screenSize.X,
+                    screenSize.Y),
                 Color = Color.Black
             });
 

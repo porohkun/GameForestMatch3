@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coroutine.cs" />
+    <Compile Include="Rectf.cs" />
     <Compile Include="Renderer.cs" />
     <Compile Include="RenderCache.cs" />
     <Compile Include="Sprite9SliceRenderer.cs" />

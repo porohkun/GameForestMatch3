@@ -48,13 +48,7 @@ namespace GameForestMatch3.Pages
             _faderenderer = AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("rect"))
             {
                 SortingLayer = SortingLayer.GetLayer("fade"),
-                Rect = new Rectangle()
-                {
-                    X = 0,
-                    Y = 0,
-                    Width = screenSize.X,
-                    Height = screenSize.Y
-                },
+                Rect = new Rectf(0, 0, screenSize.X, screenSize.Y),
                 Color = Color.Black
             });
 

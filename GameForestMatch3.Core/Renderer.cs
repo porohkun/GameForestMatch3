@@ -10,11 +10,12 @@ namespace GameForestMatch3.Core
 {
     public abstract class Renderer : GameObject
     {
-        private Rectangle _rect;
+        protected Rectf _rect;
+        protected Vector2 _scale;
         /// <summary>
         /// The drawing bounds on screen.
         /// </summary>
-        public Rectangle Rect
+        public Rectf Rect
         {
             get => _rect;
             set
@@ -23,6 +24,19 @@ namespace GameForestMatch3.Core
                 {
                     _rect = value;
                     OnRectChanged();
+                }
+            }
+        }
+
+        public Vector2 Scale
+        {
+            get => _scale;
+            set
+            {
+                if (value != _scale)
+                {
+                    _scale = value;
+                    OnScaleChanged();
                 }
             }
         }
@@ -48,6 +62,9 @@ namespace GameForestMatch3.Core
 
         public SortingLayer SortingLayer;
         public int OrderInLayer;
+        protected internal float LayerDepth => SortingLayer?.GetDepth(OrderInLayer) ?? 0f;
+
+        protected Rectf OriginRect;
 
         public Renderer(RenderCache renderCache) : base(renderCache)
         {
@@ -55,7 +72,19 @@ namespace GameForestMatch3.Core
 
         protected virtual void OnRectChanged()
         {
+            _scale = Rect.ScaleFrom(OriginRect);
+        }
 
+        protected virtual void OnScaleChanged()
+        {
+            var w = OriginRect.Width * Scale.X;
+            var h = OriginRect.Height * Scale.Y;
+            _rect = new Rectf(
+                OriginRect.X - (w - OriginRect.Width) / 2f,
+                OriginRect.Y - (h - OriginRect.Height) / 2f,
+                w,
+                h);
+            _scale = new Vector2(Rect.Width / OriginRect.Width, Rect.Height / OriginRect.Height);
         }
 
         protected internal override void Draw(GameTime gameTime)

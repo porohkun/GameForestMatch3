@@ -21,7 +21,7 @@ namespace GameForestMatch3.Core
         public void RenderCached(SpriteBatch spriteBatch)
         {
             Effect shader = null;
-            foreach (var rend in _renderers.OrderBy(r => r.SortingLayer?.GetDepth(r.OrderInLayer) ?? 0f))
+            foreach (var rend in _renderers.OrderBy(r => r.LayerDepth))
             {
                 if (rend.Shader != shader)
                 {

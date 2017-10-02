@@ -10,11 +10,11 @@ namespace GameForestMatch3.Core
 {
     public abstract class BasePage : GameObject<GameObject>
     {
-        protected Rectangle _screenRect;
+        protected Rectf _screenRect;
 
         public BasePage(RenderCache renderCache, Point screenSize):base(renderCache)
         {
-            _screenRect = new Rectangle(Point.Zero, screenSize);
+            _screenRect = new Rectf(Point.Zero, screenSize);
         }
     }
 }

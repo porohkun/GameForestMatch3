@@ -10,11 +10,11 @@ namespace GameForestMatch3.Core
 {
     public class Sprite9SliceRenderer : SpriteRenderer
     {
-        private Rectangle _centerRect = Rectangle.Empty;
-        private Rectangle[,] _destinationRects = new Rectangle[3, 3];
-        private Rectangle[,] _sourceRects = new Rectangle[3, 3];
+        private Rectf _centerRect = Rectf.Empty;
+        private Rectf[,] _destinationRects = new Rectf[3, 3];
+        private Rectf[,] _sourceRects = new Rectf[3, 3];
 
-        public Rectangle CenterRect
+        public Rectf CenterRect
         {
             get => _centerRect;
             set
@@ -46,12 +46,13 @@ namespace GameForestMatch3.Core
 
         protected override void OnRectChanged()
         {
+            base.OnRectChanged();
             Recalculate9Rects();
         }
 
         private void Recalculate9Rects()
         {
-            if (CenterRect == Rectangle.Empty)
+            if (CenterRect == Rectf.Empty)
                 return;
 
             var tex = Texture.Bounds.Size;
@@ -65,30 +66,30 @@ namespace GameForestMatch3.Core
             for (int x = 0; x < 3; x++)
                 for (int y = 0; y < 3; y++)
                 {
-                    _destinationRects[x, y] = new Rectangle()
-                    {
-                        X = x == 0 ? (Rect.X) : (x == 1 ? (Rect.X + left) : (Rect.X + Rect.Width - right)),
-                        Y = y == 0 ? (Rect.Y) : (y == 1 ? (Rect.Y + top) : (Rect.Bottom - bottom)),
-                        Width = x == 0 ? (left) : (x == 1 ? (Rect.Width - left - right) : (right)),
-                        Height = y == 0 ? (top) : (y == 1 ? (Rect.Height - top - bottom) : (bottom))
-                    };
-                    _sourceRects[x, y] = new Rectangle()
-                    {
-                        X = x == 0 ? (0) : (x == 1 ? (left) : (left + width)),
-                        Y = y == 0 ? (0) : (y == 1 ? (top) : (top + height)),
-                        Width = x == 0 ? (left) : (x == 1 ? (width) : (right)),
-                        Height = y == 0 ? (top) : (y == 1 ? (height) : (bottom))
-                    };
+                    _destinationRects[x, y] = new Rectf(
+                        x == 0 ? (Rect.X) : (x == 1 ? (Rect.X + left) : (Rect.X + Rect.Width - right)),
+                        y == 0 ? (Rect.Y) : (y == 1 ? (Rect.Y + top) : (Rect.Bottom - bottom)),
+                        x == 0 ? (left) : (x == 1 ? (Rect.Width - left - right) : (right)),
+                        y == 0 ? (top) : (y == 1 ? (Rect.Height - top - bottom) : (bottom)));
+                    _sourceRects[x, y] = new Rectf(
+                        x == 0 ? (0) : (x == 1 ? (left) : (left + width)),
+                        y == 0 ? (0) : (y == 1 ? (top) : (top + height)),
+                        x == 0 ? (left) : (x == 1 ? (width) : (right)),
+                        y == 0 ? (top) : (y == 1 ? (height) : (bottom)));
                 }
         }
 
         protected internal override void Render(SpriteBatch spriteBatch)
         {
-            if (CenterRect != Rectangle.Empty)
+            if (CenterRect != Rectf.Empty)
                 for (int x = 0; x < 3; x++)
                     for (int y = 0; y < 3; y++)
-                        spriteBatch.Draw(Texture, _destinationRects[x, y], _sourceRects[x, y], Color, Rotation,
-                            RotationOrigin, Effects, SortingLayer?.GetDepth(OrderInLayer) ?? 0f);
+                    {
+                        var rect = _destinationRects[x, y];
+                        var origin = _sourceRects[x, y];
+                        spriteBatch.Draw(Texture, rect.Position, (Rectangle)origin, Color,
+                            Rotation, RotationOrigin, rect.ScaleFrom(origin), Effects, LayerDepth);
+                    }
         }
     }
 }
