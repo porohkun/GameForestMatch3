@@ -88,7 +88,7 @@ namespace GameForestMatch3.Core
                         var rect = _destinationRects[x, y];
                         var origin = _sourceRects[x, y];
                         spriteBatch.Draw(Texture, rect.Position, (Rectangle)origin, Color,
-                            Rotation, RotationOrigin, rect.ScaleFrom(origin), Effects, LayerDepth);
+                            Rotation, Vector2.Zero, rect.ScaleFrom(origin), Effects, LayerDepth);
                     }
         }
     }

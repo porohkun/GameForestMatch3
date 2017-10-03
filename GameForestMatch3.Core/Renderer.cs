@@ -11,7 +11,12 @@ namespace GameForestMatch3.Core
     public abstract class Renderer : GameObject
     {
         protected Rectf _rect;
+        protected Vector2 _position;
         protected Vector2 _scale;
+        protected Vector2 _size;
+        protected Color _color;
+        protected float _rotation;
+
         /// <summary>
         /// The drawing bounds on screen.
         /// </summary>
@@ -28,6 +33,19 @@ namespace GameForestMatch3.Core
             }
         }
 
+        public Vector2 Position
+        {
+            get => _position;
+            set
+            {
+                if (value != _position)
+                {
+                    _position = value;
+                    OnPositionChanged();
+                }
+            }
+        }
+
         public Vector2 Scale
         {
             get => _scale;
@@ -40,19 +58,50 @@ namespace GameForestMatch3.Core
                 }
             }
         }
+
+        public Vector2 Size
+        {
+            get => _size;
+            set
+            {
+                if (value != _size)
+                {
+                    _size = value;
+                    OnSizeChanged();
+                }
+            }
+        }
         /// <summary>
         /// A Color mask.
         /// </summary>
         /// 
-        public Color Color { get; set; }
+        public Color Color
+        {
+            get => _color;
+            set
+            {
+                if (value != _color)
+                {
+                    _color = value;
+                    OnColorChanged();
+                }
+            }
+        }
         /// <summary>
         /// A Rotation of this renderer.
         /// </summary>
-        public float Rotation { get; set; }
-        /// <summary>
-        /// Center of the Rotation. 0,0 by default.
-        /// </summary>
-        public Vector2 RotationOrigin { get; set; }
+        public float Rotation
+        {
+            get => _rotation;
+            set
+            {
+                if (!Mathf.Approximately(value, _rotation))
+                {
+                    _rotation = value;
+                    OnRotationChanged();
+                }
+            }
+        }
         /// <summary>
         /// Modificators for drawing. Can be combined.
         /// </summary>
@@ -72,19 +121,46 @@ namespace GameForestMatch3.Core
 
         protected virtual void OnRectChanged()
         {
-            _scale = Rect.ScaleFrom(OriginRect);
+            _scale = _rect.ScaleFrom(OriginRect);
+            _position = _rect.Position + _rect.Size / 2f;
+            _size = _rect.Size;
+        }
+
+        protected virtual void OnPositionChanged()
+        {
+            _rect = new Rectf(_position - _rect.Size / 2f, _rect.Size);
         }
 
         protected virtual void OnScaleChanged()
         {
-            var w = OriginRect.Width * Scale.X;
-            var h = OriginRect.Height * Scale.Y;
+            var w = OriginRect.Width * _scale.X;
+            var h = OriginRect.Height * _scale.Y;
             _rect = new Rectf(
-                OriginRect.X - (w - OriginRect.Width) / 2f,
-                OriginRect.Y - (h - OriginRect.Height) / 2f,
+                _position.X - w / 2f,
+                _position.Y - h / 2f,
                 w,
                 h);
-            _scale = new Vector2(Rect.Width / OriginRect.Width, Rect.Height / OriginRect.Height);
+            _size = _rect.Size;
+        }
+
+        protected virtual void OnSizeChanged()
+        {
+            _rect = new Rectf(
+                _position.X - _size.X / 2f,
+                _position.Y - _size.Y / 2f,
+                _size.X,
+                _size.Y);
+            _scale = _rect.ScaleFrom(OriginRect);
+        }
+
+        protected virtual void OnColorChanged()
+        {
+
+        }
+
+        protected virtual void OnRotationChanged()
+        {
+
         }
 
         protected internal override void Draw(GameTime gameTime)

@@ -28,7 +28,7 @@ namespace GameForestMatch3.Core
                     if (shader != null)
                         spriteBatch.End();
                     shader = rend.Shader;
-                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, effect: shader);
+                    spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, effect: shader);
                 }
                 rend.Render(spriteBatch);
             }

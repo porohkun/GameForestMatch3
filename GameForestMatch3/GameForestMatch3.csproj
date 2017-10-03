@@ -59,6 +59,17 @@
     <StartupObject>GameForestMatch3.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="EffectActions\BaseEffectAction.cs" />
+    <Compile Include="EffectActions\ScaleInOutEffectAction.cs" />
+    <Compile Include="EffectActions\ShakeInOutEffectAction.cs" />
+    <Compile Include="Effects\FallEffect.cs" />
+    <Compile Include="Effects\BaseEffect.cs" />
+    <Compile Include="Effects\EffectsManager.cs" />
+    <Compile Include="Effects\AfterFallEffect.cs" />
+    <Compile Include="Game\Cell.cs" />
+    <Compile Include="Game\Chip.cs" />
+    <Compile Include="Game\ChipRenderer.cs" />
+    <Compile Include="Game\GameField.cs" />
     <Compile Include="GUI\Button.cs" />
     <Compile Include="Match3Game.cs" />
     <Compile Include="Pages\GamePage.cs" />

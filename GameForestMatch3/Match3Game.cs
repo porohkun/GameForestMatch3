@@ -41,8 +41,10 @@ namespace GameForestMatch3
             TweenFactory.Initialize(this);
 
             SortingLayer.RegisterLayer("background", 0);
-            SortingLayer.RegisterLayer("gui_back", 1);
-            SortingLayer.RegisterLayer("gui", 2);
+            SortingLayer.RegisterLayer("field", 1);
+            SortingLayer.RegisterLayer("items", 2);
+            SortingLayer.RegisterLayer("gui_back", 3);
+            SortingLayer.RegisterLayer("gui", 4);
             SortingLayer.RegisterLayer("fade", 99);
 
             base.Initialize();

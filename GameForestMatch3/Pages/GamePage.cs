@@ -13,38 +13,21 @@ namespace GameForestMatch3.Pages
     public class GamePage : BasePage
     {
         private SpriteRenderer _faderenderer;
-        
+        private GameField _field;
+
+        private SpriteRenderer _renderer;
+
         public GamePage(RenderCache renderCache, Point screenSize) : base(renderCache, screenSize)
         {
             var renderer1 = AddComponent(new SpriteRenderer(renderCache, "background") { SortingLayer = SortingLayer.GetLayer("background") });
             renderer1.Rect = _screenRect.EnvelopeInThis(renderer1.Texture.Width, renderer1.Texture.Height);
 
-            AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("item1"))
-            {
-                SortingLayer = SortingLayer.GetLayer("gui"),
-                Rect = new Rectangle()
-                {
-                    X = 300,
-                    Y = 300,
-                    Width = 128,
-                    Height = 128
-                }
-            });
-
-            AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("item1"))
-            {
-                SortingLayer = SortingLayer.GetLayer("gui"),
-                OrderInLayer = -1,
-                Rect = new Rectangle()
-                {
-                    X = 350,
-                    Y = 300,
-                    Width = 128,
-                    Height = 128
-                },
-                Shader = Resources.Get<Effect>("glow")
-            });
-
+            _field = AddComponent(new GameField(renderCache, 8, 8, new Rectf(
+                screenSize.X - screenSize.Y + 100,
+                100,
+                screenSize.Y - 200,
+                screenSize.Y - 200)));
+            
             _faderenderer = AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("rect"))
             {
                 SortingLayer = SortingLayer.GetLayer("fade"),
@@ -53,12 +36,11 @@ namespace GameForestMatch3.Pages
             });
 
             TweenFactory.Tween(_faderenderer, 1f, 0f, 1f, TweenScaleFunctions.SineEaseOut,
-                p => _faderenderer.Color = new Color(_faderenderer.Color, p.CurrentValue),
-                p1 =>
+                p => _faderenderer.Color = new Color(_faderenderer.Color, p.CurrentValue), p =>
                 {
-                    
+                    //new AfterFallEffect(_renderer).Play();
                 });
-            Resources.Get<Effect>("glow").Parameters["param1"].SetValue(2f);
+            //Resources.Get<Effect>("glow").Parameters["param1"].SetValue(2f);
         }
     }
 }

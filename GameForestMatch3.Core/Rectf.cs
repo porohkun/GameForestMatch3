@@ -82,5 +82,74 @@ namespace GameForestMatch3.Core
         {
             return new Vector2(Width / origin.Width, Height / origin.Height);
         }
+
+        public Rectf FitInThis(float width, float height)
+        {
+            var parentRate = Width / Height;
+            var targetRate = width / height;
+
+            if (Mathf.Approximately(parentRate, targetRate))
+                return this;
+            if (parentRate > targetRate) //parent more wide
+            {
+                var h = Height;
+                var w = targetRate * h;
+                var x = X + (Width - w) / 2f;
+                var y = Y;
+                return new Rectf(x, y, w, h);
+            }
+            else
+            {
+                var w = Width;
+                var h = w / targetRate;
+                var x = X;
+                var y = Y + (Height - h) / 2f;
+                return new Rectf(x, y, w, h);
+            }
+        }
+
+        public Rectf FitInThis(Vector2 size)
+        {
+            return FitInThis(size.X, size.Y);
+        }
+
+        public Rectf EnvelopeInThis(float width, float height)
+        {
+            var parentRate = Width / Height;
+            var targetRate = width / height;
+
+            if (Mathf.Approximately(parentRate, targetRate))
+                return this;
+            if (parentRate > targetRate) //parent more wide
+            {
+                var w = Width;
+                var h = w / targetRate;
+                var x = X;
+                var y = Y + (Height - h) / 2f;
+                return new Rectf(x, y, w, h);
+            }
+            else
+            {
+                var h = Height;
+                var w = targetRate * h;
+                var x = X + (Width - w) / 2f;
+                var y = Y;
+                return new Rectf(x, y, w, h);
+            }
+        }
+
+        public Rectf EnvelopeInThis(Point size)
+        {
+            return EnvelopeInThis(size.X, size.Y);
+        }
+
+        public Rectf Expand(float radius)
+        {
+            return new Rectf(
+                X - radius,
+                Y - radius,
+                Width + radius * 2,
+                Height + radius * 2);
+        }
     }
 }

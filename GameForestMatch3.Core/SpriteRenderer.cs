@@ -54,7 +54,7 @@ namespace GameForestMatch3.Core
 
         protected internal override void Render(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Rect.Position, (Rectangle)OriginRect, Color , Rotation, RotationOrigin, Scale, Effects, LayerDepth);
+            spriteBatch.Draw(Texture, Rect.Position, (Rectangle)OriginRect, Color , Rotation, Vector2.Zero, Scale, Effects, LayerDepth);
         }
     }
 }

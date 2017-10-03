@@ -58,7 +58,7 @@ namespace GameForestMatch3
                 Interactable = false
             });
             _exitButton.Click += ExitButtonClick;
-
+            
             _faderenderer = AddComponent(new SpriteRenderer(renderCache, Resources.Get<Texture2D>("rect"))
             {
                 SortingLayer = SortingLayer.GetLayer("fade"),

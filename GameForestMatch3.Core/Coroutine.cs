@@ -11,6 +11,8 @@ namespace GameForestMatch3.Core
     {
         private static List<Coroutine> _coroutines = new List<Coroutine>();
 
+        public static GameTime Time { get; private set; }
+
         public static void BindToGame(IGame game)
         {
             game.OnUpdate += Game_OnUpdate;
@@ -22,7 +24,7 @@ namespace GameForestMatch3.Core
         /// n>0: continue after n seconds
         /// n<0: stop
         /// </summary>
-        public static Coroutine Start(GameObject obj, IEnumerator<float> routine)
+        public static Coroutine Start(object obj, IEnumerator<float> routine)
         {
             var coroutine = new Coroutine(obj, routine);
             _coroutines.Add(coroutine);
@@ -34,7 +36,7 @@ namespace GameForestMatch3.Core
             coroutine.Finished = true;
         }
 
-        public static void StopAllFor(GameObject obj)
+        public static void StopAllFor(object obj)
         {
             var coroutines = _coroutines.Where(c => c.Object == obj).ToArray();
             foreach (var coroutine in coroutines)
@@ -43,9 +45,10 @@ namespace GameForestMatch3.Core
 
         private static void Game_OnUpdate(GameTime gameTime)
         {
+            Time = gameTime;
             foreach (var coroutine in _coroutines)
             {
-                if (!coroutine.Object.Enabled)
+                if (coroutine.Object == null)
                 {
                     Stop(coroutine);
                     continue;
@@ -63,13 +66,13 @@ namespace GameForestMatch3.Core
             _coroutines.RemoveAll(c => c.Finished);
         }
 
-        public GameObject Object { get; }
+        public object Object { get; }
         public bool Finished { get; private set; }
 
         private IEnumerator<float> _routine;
         private float _delay;
 
-        private Coroutine(GameObject obj, IEnumerator<float> routine)
+        private Coroutine(object obj, IEnumerator<float> routine)
         {
             Object = obj;
             _routine = routine;
