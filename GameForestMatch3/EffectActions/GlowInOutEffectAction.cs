@@ -5,34 +5,40 @@ using System.Text;
 using GameForestMatch3.Core;
 using GameForestMatch3.Utils;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameForestMatch3
 {
     /// <summary>
     /// Масштабирует группу объектов до выбранного масштаба и обратно за выбранное время
     /// </summary>
-    public class ScaleInOutEffectAction : BaseEffectAction<ScaleInOutEffectActionSettings>
+    public class GlowInOutEffectAction : BaseEffectAction<GlowInOutEffectActionSettings>
     {
-        protected override void OnPlay(ScaleInOutEffectActionSettings settings, Action onCompleted)
+        private Effect _shader = Resources.Get<Effect>("glow").Clone();
+
+        protected override void OnPlay(GlowInOutEffectActionSettings settings, Action onCompleted)
         {
-            var originScale = settings.Items.Select(i => i.Scale).ToArray();
-            TweenFactory.Tween(settings.Key, settings.StartScale, settings.TargetScale, settings.DurationIn,
+            foreach (var rend in settings.Items)
+                rend.Shader = _shader;
+            TweenFactory.Tween(settings.Key, settings.StartGlow, settings.TargetGlow, settings.DurationIn,
                 TweenScaleFunctions.SineEaseIn,
                 (t) =>
                 {
                     for (int i = 0; i < settings.Items.Length; i++)
-                        settings.Items[i].Scale = originScale[i] * t.CurrentValue;
+                        _shader.Parameters["glow"].SetValue(t.CurrentValue);
                 }, (t2) =>
                 {
                     if (settings.DurationOut > 0)
-                        TweenFactory.Tween(settings.Key, settings.TargetScale, settings.FinalScale, settings.DurationOut,
+                        TweenFactory.Tween(settings.Key, settings.TargetGlow, settings.FinalGlow, settings.DurationOut,
                             TweenScaleFunctions.SineEaseOut,
                             (t) =>
                             {
-                                for (int i = 0; i < settings.Items.Length; i++)
-                                    settings.Items[i].Scale = originScale[i] * t.CurrentValue;
+                                _shader.Parameters["glow"].SetValue(t.CurrentValue);
                             }, (t3) =>
                             {
+                                if (settings.FinalShader != null)
+                                    foreach (var rend in settings.Items)
+                                        rend.Shader = settings.FinalShader;
                                 Unlock(onCompleted);
                             });
                     else
@@ -42,7 +48,7 @@ namespace GameForestMatch3
 
     }
 
-    public class ScaleInOutEffectActionSettings : BaseEffectActionSettings
+    public class GlowInOutEffectActionSettings : BaseEffectActionSettings
     {
         /// <summary>
         /// Объект для применения экшна
@@ -58,9 +64,10 @@ namespace GameForestMatch3
         /// <summary>
         /// Целевой масштаб
         /// </summary>
-        public Vector2 StartScale { get; set; } = Vector2.One;
-        public Vector2 TargetScale { get; set; }
-        public Vector2 FinalScale { get; set; } = Vector2.One;
+        public float StartGlow { get; set; } = 1f;
+        public float TargetGlow { get; set; }
+        public float FinalGlow { get; set; } = 1f;
 
+        public Effect FinalShader { get; set; }
     }
 }

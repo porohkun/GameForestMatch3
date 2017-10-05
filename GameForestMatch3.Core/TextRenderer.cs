@@ -28,6 +28,11 @@ namespace GameForestMatch3.Core
 
         }
 
+        protected override void OnScaleChanged()
+        {
+            //base.OnScaleChanged();
+        }
+
         protected internal override void Render(SpriteBatch spriteBatch)
         {
             var size = Font.MeasureString(Text);

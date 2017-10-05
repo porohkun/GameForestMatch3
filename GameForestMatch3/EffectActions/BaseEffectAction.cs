@@ -9,40 +9,12 @@ using Microsoft.Xna.Framework;
 
 namespace GameForestMatch3
 {
-    //public class BaseEffectAction 
-    //{
-    //    //public bool Free { get; private set; }
-
-    //    //protected EffectsManager m_Manager;
-
-    //    //public void Initialize(EffectsManager manager)
-    //    //{
-    //    //    m_Manager = manager;
-    //    //    OnInitialize();
-    //    //}
-
-    //    //protected virtual void OnInitialize() { }
-
-    //    //public void Lock()
-    //    //{
-    //    //    //Free = false;
-    //    //    Enabled = true;
-    //    //    OnLock();
-    //    //}
-
-    //    //protected virtual void OnLock() { }
-
-
-    //}
-
-    public class BaseEffectAction<T> /*: BaseEffectAction*/ where T : BaseEffectActionSettings
+    public class BaseEffectAction<T> where T : BaseEffectActionSettings
     {
         public void Unlock(Action onCompleted = null)
         {
             OnUnlock();
             Coroutine.StopAllFor(this);
-            //Free = true;
-            //Enabled = false;
             onCompleted?.Invoke();
         }
 

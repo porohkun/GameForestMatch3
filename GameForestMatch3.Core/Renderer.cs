@@ -16,6 +16,9 @@ namespace GameForestMatch3.Core
         protected Vector2 _size;
         protected Color _color;
         protected float _rotation;
+        protected Effect _shader = Resources.Get<Effect>("default");
+        protected SortingLayer _sortingLayer;
+        protected int _orderInLayer;
 
         /// <summary>
         /// The drawing bounds on screen.
@@ -107,10 +110,43 @@ namespace GameForestMatch3.Core
         /// </summary>
         public SpriteEffects Effects { get; set; }
 
-        public Effect Shader { get; set; } = Resources.Get<Effect>("default");
+        public Effect Shader
+        {
+            get => _shader;
+            set
+            {
+                if (value != _shader)
+                {
+                    _shader = value;
+                    OnShaderChanged();
+                }
+            }
+        }
 
-        public SortingLayer SortingLayer;
-        public int OrderInLayer;
+        public SortingLayer SortingLayer
+        {
+            get => _sortingLayer;
+            set
+            {
+                if (value != _sortingLayer)
+                {
+                    _sortingLayer = value;
+                    OnOrderChanged();
+                }
+            }
+        }
+        public int OrderInLayer
+        {
+            get => _orderInLayer;
+            set
+            {
+                if (value != _orderInLayer)
+                {
+                    _orderInLayer = value;
+                    OnOrderChanged();
+                }
+            }
+        }
         protected internal float LayerDepth => SortingLayer?.GetDepth(OrderInLayer) ?? 0f;
 
         protected Rectf OriginRect;
@@ -159,6 +195,16 @@ namespace GameForestMatch3.Core
         }
 
         protected virtual void OnRotationChanged()
+        {
+
+        }
+
+        protected virtual void OnShaderChanged()
+        {
+
+        }
+
+        protected virtual void OnOrderChanged()
         {
 
         }

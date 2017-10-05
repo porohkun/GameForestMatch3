@@ -12,7 +12,7 @@ namespace GameForestMatch3
         private float _alpha0Line;
         private float _alpha1Line;
 
-        private float _fallSpeed = 700f;
+        private float _fallSpeed = 100f;
 
 
         public FallEffect(Renderer obj, float alpha0Line, float alpha1Line, Vector2 target)
@@ -26,7 +26,7 @@ namespace GameForestMatch3
         protected override void OnPlay(Action effectFinished)
         {
             var dist = Vector2.Distance(_end, _object.Position);
-            var time = dist / (_fallSpeed * _rnd.Next(950, 1050) / 1000);
+            var time = dist / (_fallSpeed * _rnd.Next(980, 1020) / 1000);
             TweenFactory.Tween(_rnd.Next(), _object.Position, _end, time,
                 TweenScaleFunctions.QuadraticEaseIn, v =>
                 {

@@ -48,7 +48,8 @@ namespace GameForestMatch3
         {
             new ScaleInOutEffectAction().Play(new ScaleInOutEffectActionSettings()
             {
-                Duration = _deformationDuration,
+                DurationIn = _deformationDuration / 2f,
+                DurationOut = _deformationDuration / 2f,
                 TargetScale = _deformationScale,
                 Items = _objects
             });
