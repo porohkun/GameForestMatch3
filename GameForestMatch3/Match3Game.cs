@@ -70,9 +70,6 @@ namespace GameForestMatch3
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             OnUpdate?.Invoke(gameTime);
 
             base.Update(gameTime);
