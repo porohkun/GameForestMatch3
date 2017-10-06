@@ -66,6 +66,7 @@
     <Compile Include="Effects\AppearEffect.cs" />
     <Compile Include="Effects\DeselectEffect.cs" />
     <Compile Include="Effects\NoSwapEffect.cs" />
+    <Compile Include="Effects\ExplodeEffect.cs" />
     <Compile Include="Effects\SwapEffect.cs" />
     <Compile Include="Effects\SelectEffect.cs" />
     <Compile Include="Effects\DisappearEffect.cs" />

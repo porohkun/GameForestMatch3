@@ -46,8 +46,11 @@ namespace GameForestMatch3.Core
         private static void Game_OnUpdate(GameTime gameTime)
         {
             Time = gameTime;
-            foreach (var coroutine in _coroutines)
+            int i = 0;
+            while (i < _coroutines.Count)
             {
+                var coroutine = _coroutines[i];
+                i++;
                 if (coroutine.Object == null)
                 {
                     Stop(coroutine);
@@ -76,6 +79,17 @@ namespace GameForestMatch3.Core
         {
             Object = obj;
             _routine = routine;
+        }
+
+        public static void Wait(float seconds, Action afterWait)
+        {
+            Start(seconds, WaitCoroutine(seconds, afterWait));
+        }
+
+        private static IEnumerator<float> WaitCoroutine(float seconds, Action afterWait)
+        {
+            yield return seconds;
+            afterWait?.Invoke();
         }
     }
 }

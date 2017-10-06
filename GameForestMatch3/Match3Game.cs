@@ -43,8 +43,9 @@ namespace GameForestMatch3
             SortingLayer.RegisterLayer("background", 0);
             SortingLayer.RegisterLayer("field", 1);
             SortingLayer.RegisterLayer("items", 2);
-            SortingLayer.RegisterLayer("gui_back", 3);
-            SortingLayer.RegisterLayer("gui", 4);
+            SortingLayer.RegisterLayer("effects", 3);
+            SortingLayer.RegisterLayer("gui_back", 4);
+            SortingLayer.RegisterLayer("gui", 5);
             SortingLayer.RegisterLayer("fade", 99);
 
             base.Initialize();

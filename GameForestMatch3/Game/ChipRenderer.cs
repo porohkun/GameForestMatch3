@@ -31,7 +31,7 @@ namespace GameForestMatch3
             {
                 SortingLayer = SortingLayer.GetLayer("items"),
             };
-            if (bonus != ChipBonus.Zero && bonus != ChipBonus.None)
+            if (bonus != ChipBonus.None )
                 _modifyItem = new SpriteRenderer(renderCache, bonus == ChipBonus.Bomb ? "bomb2" : (bonus == ChipBonus.HorLine ? "hor-line2" : "ver-line2"))
                 {
                     SortingLayer = SortingLayer.GetLayer("items"),

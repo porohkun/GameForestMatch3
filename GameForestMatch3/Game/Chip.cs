@@ -12,13 +12,13 @@ namespace GameForestMatch3
         private static Random _rnd = new Random();
 
         public ChipColor Color { get; }
-        public ChipBonus Bonus { get; } = ChipBonus.Zero;
+        public ChipBonus Bonus { get; } 
         public ChipRenderer Renderer { get; }
         public bool Falling { get; set; }
 
         public Chip(GameObject<GameObject> parent, RenderCache cache) : this(parent, cache, (ChipColor)_rnd.Next(0, 5)) { }
         
-        public Chip(GameObject<GameObject> parent, RenderCache cache, ChipColor color, ChipBonus bonus= ChipBonus.Zero)
+        public Chip(GameObject<GameObject> parent, RenderCache cache, ChipColor color, ChipBonus bonus= ChipBonus.None)
         {
             Color = color;
             Bonus = bonus;
@@ -37,10 +37,9 @@ namespace GameForestMatch3
 
     public enum ChipBonus
     {
-        Zero = 0,
-        None = 1,
-        HorLine = 2,
-        VerLine = 3,
-        Bomb = 4
+        None = 0,
+        HorLine = 1,
+        VerLine = 2,
+        Bomb = 3
     }
 }

@@ -23,6 +23,8 @@ namespace GameForestMatch3
         public Dispencer[] Dispensers { get; }
         public int WaitingCells { get; private set; }
         public bool Ready => WaitingCells == 0;
+        public int DestroyingChips { get; private set; }
+        public int AppearingChips { get; private set; }
 
         public GameField(RenderCache renderCache, int width, int height, Rectf rect) : base(renderCache)
         {
@@ -61,10 +63,26 @@ namespace GameForestMatch3
             }
         }
 
-        private Keys[] preview = new Keys[0];
+        private ButtonState prev = ButtonState.Released;
         protected override void OnUpdate(GameTime gameTime)
         {
-
+            var state = Mouse.GetState().LeftButton;
+            if (state == ButtonState.Pressed && prev == ButtonState.Released)
+            {
+                var pos = GetCellPos(Mouse.GetState().Position);
+                if (CheckInBorder(pos))
+                {
+                    var chip = Cells[pos.X][pos.Y].CurrentChip;
+                    var c = (int)chip.Bonus;
+                    c++;
+                    if (c == 4)
+                        c = 0;
+                    ShowNewChip(new Chip(this, RenderCache, chip.Color, (ChipBonus) c), pos);
+                    AppearingChips--;
+                    Remove(chip.Renderer);
+                }
+            }
+            prev = state;
         }
 
         private void GameField_ChipArrived(int x, int y)
@@ -165,16 +183,22 @@ namespace GameForestMatch3
                 }
             }
 
+            foreach (var point in destroy.Distinct())
+                DestroyChip(point);
+
+            CreateBonuses(bombs, horizontal, vertical);
+            return;
+
             destroy = new List<Point>(destroy.Distinct());
 
-            //var newDestroy = new List<Point>();
-            //foreach (var point in destroy)
-            //{
-            //    if (Cells[point.X][point.Y].CurrentChip.Bonus == ChipBonus.Bomb)
-            //    {
-                    
-            //    }
-            //}
+            var newDestroy = new List<Point>();
+            foreach (var point in destroy)
+            {
+                if (Cells[point.X][point.Y].CurrentChip.Bonus == ChipBonus.Bomb)
+                {
+
+                }
+            }
 
             var max = new int[Width];
             var news = new int[Width];
@@ -198,7 +222,29 @@ namespace GameForestMatch3
                 foreach (var rend in destroyRenderers)
                     Remove(rend);
             });
+            List<Renderer> appears = CreateBonuses(bombs, horizontal, vertical);
 
+            new AppearEffect(appears.ToArray()).Play(() =>
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    for (int y = max[x]; y >= 0; y--)
+                        if (!Cells[x][y].Empty)
+                        {
+                            WaitingCells++;
+                            Dispensers[x].FallChip(Cells[x][y].CurrentChip, y);
+                        }
+                    for (int i = 0; i < news[x]; i++)
+                    {
+                        WaitingCells++;
+                        Dispensers[x].Dispence(new Chip(this, RenderCache));
+                    }
+                }
+            });
+        }
+
+        private List<Renderer> CreateBonuses(List<Bonus> bombs, List<Bonus> horizontal, List<Bonus> vertical)
+        {
             var appears = new List<Renderer>();
             foreach (var b in bombs)
             {
@@ -219,23 +265,151 @@ namespace GameForestMatch3
                 ShowNewChip(chip, b.Key);
             }
 
-            new AppearEffect(appears.ToArray()).Play(() =>
-            {
-                for (int x = 0; x < Width; x++)
+            if (appears.Count > 0)
+                new AppearEffect(appears.ToArray()).Play(() =>
                 {
-                    for (int y = max[x]; y >= 0; y--)
-                        if (!Cells[x][y].Empty)
+                    OnAppear(appears.Count);
+                });
+
+            return appears;
+        }
+
+        private void ShowNewChip(Chip chip, Point pos)
+        {
+            chip.Renderer.Color = Color.White;
+            chip.Renderer.Size = _step;
+            chip.Renderer.Position = GetPosition(pos.X, pos.Y);
+            Cells[pos.X][pos.Y].CurrentChip = chip;
+            AppearingChips++;
+        }
+
+        private void DestroyChip(Point point)
+        {
+            var cell = Cells[point.X][point.Y];
+            var chip = cell.CurrentChip;
+            if (chip != null)
+            {
+                DestroyingChips++;
+                switch (chip.Bonus)
+                {
+                    case ChipBonus.HorLine:
+                    case ChipBonus.VerLine:
+                    case ChipBonus.None:
                         {
-                            WaitingCells++;
-                            Dispensers[x].FallChip(Cells[x][y].CurrentChip, y);
+                            cell.CurrentChip = null;
+                            new DisappearEffect(chip.Renderer).Play(() =>
+                            {
+                                Remove(chip.Renderer);
+                                OnDestroy();
+                            });
+                            break;
                         }
-                    for (int i = 0; i < news[x]; i++)
-                    {
-                        WaitingCells++;
-                        Dispensers[x].Dispence(new Chip(this, RenderCache));
-                    }
+                    case ChipBonus.Bomb:
+                        {
+                            cell.CurrentChip = null;
+                            Coroutine.Wait(0.25f, () =>
+                            {
+                                var explosion = AddComponent(new SpriteRenderer(RenderCache, "explosion")
+                                {
+                                    SortingLayer = SortingLayer.GetLayer("effects"),
+                                    Position = GetPosition(point.X, point.Y),
+                                    Size = _step / 2f,
+                                });
+                                new ExplodeEffect(explosion).Play(() => Remove(explosion));
+                                new DisappearEffect(chip.Renderer).Play(() =>
+                                {
+                                    Remove(chip.Renderer);
+                                    OnDestroy();
+                                });
+                                for (int x = point.X - 1; x <= point.X + 1; x++)
+                                    for (int y = point.Y - 1; y <= point.Y + 1; y++)
+                                        if (CheckInBorder(new Point(x, y)))
+                                            DestroyChip(new Point(x, y));
+                            });
+                            break;
+                        }
                 }
-            });
+            }
+        }
+
+        private void OnAppear(int count = 1)
+        {
+            AppearingChips -= count;
+            if (DestroyingChips > 0)
+                return;
+            if (AppearingChips > 0)
+                return;
+            DispenseAndDropDown();
+        }
+
+        private void OnDestroy(int count = 1)
+        {
+            DestroyingChips -= count;
+            if (DestroyingChips > 0)
+                return;
+            if (AppearingChips > 0)
+                return;
+            DispenseAndDropDown();
+        }
+
+        private void DispenseAndDropDown()
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                var stable = true;
+                for (int y = Height - 1; y >= 0; y--)
+                {
+                    var cell = Cells[x][y];
+                    if (stable && cell.Ready) continue;
+                    stable = false;
+                    cell.Ready = false;
+                    WaitingCells++;
+                    if (cell.Empty)
+                        Dispensers[x].Dispence(new Chip(this, RenderCache));
+                    else
+                        Dispensers[x].FallChip(cell.CurrentChip, y);
+                }
+            }
+        }
+
+        private IEnumerable<HorizontalLine> GetHorizontalLines(int y)
+        {
+            var color = Cells[0][y].CurrentChip.Color;
+            var line = new HorizontalLine() { Position = new Point(0, y) };
+            for (int x = 0; x < Width; x++)
+            {
+                if (color == Cells[x][y].CurrentChip.Color)
+                    line.Length++;
+                else
+                {
+                    if (line.Length >= 3)
+                        yield return line;
+                    line = new HorizontalLine() { Position = new Point(x, y), Length = 1 };
+                    color = Cells[x][y].CurrentChip.Color;
+                }
+            }
+            if (line.Length >= 3)
+                yield return line;
+        }
+
+        private IEnumerable<HorizontalLine> GetVerticalLines(int x)
+        {
+            var color = Cells[x][0].CurrentChip.Color;
+            var line = new HorizontalLine() { Position = new Point(x, 0) };
+            for (int y = 0; y < Height; y++)
+            {
+                if (color == Cells[x][y].CurrentChip.Color)
+                    line.Length++;
+                else
+                {
+                    if (line.Length >= 3)
+                        yield return line;
+                    line = new HorizontalLine() { Position = new Point(x, y), Length = 1 };
+                    color = Cells[x][y].CurrentChip.Color;
+                }
+            }
+            if (line.Length >= 3)
+                yield return line;
         }
 
         private IEnumerator<float> ListenFirstClick()
@@ -347,58 +521,10 @@ namespace GameForestMatch3
             return new Point(Mathf.RoundToInt(pos.X / _step.X), Mathf.RoundToInt(pos.Y / _step.Y));
         }
 
-        private void ShowNewChip(Chip chip, Point pos)
-        {
-            chip.Renderer.Color = Color.White;
-            chip.Renderer.Size = _step;
-            chip.Renderer.Position = GetPosition(pos.X, pos.Y);
-            Cells[pos.X][pos.Y].CurrentChip = chip;
-        }
-
         private bool Cross(HorizontalLine hor, HorizontalLine ver)
         {
             return hor.Position.X <= ver.Position.X && ver.Position.X < hor.Position.X + hor.Length &&
                    ver.Position.Y <= hor.Position.Y && hor.Position.Y < ver.Position.Y + ver.Length;
-        }
-
-        private IEnumerable<HorizontalLine> GetHorizontalLines(int y)
-        {
-            var color = Cells[0][y].CurrentChip.Color;
-            var line = new HorizontalLine() { Position = new Point(0, y) };
-            for (int x = 0; x < Width; x++)
-            {
-                if (color == Cells[x][y].CurrentChip.Color)
-                    line.Length++;
-                else
-                {
-                    if (line.Length >= 3)
-                        yield return line;
-                    line = new HorizontalLine() { Position = new Point(x, y), Length = 1 };
-                    color = Cells[x][y].CurrentChip.Color;
-                }
-            }
-            if (line.Length >= 3)
-                yield return line;
-        }
-
-        private IEnumerable<HorizontalLine> GetVerticalLines(int x)
-        {
-            var color = Cells[x][0].CurrentChip.Color;
-            var line = new HorizontalLine() { Position = new Point(x, 0) };
-            for (int y = 0; y < Height; y++)
-            {
-                if (color == Cells[x][y].CurrentChip.Color)
-                    line.Length++;
-                else
-                {
-                    if (line.Length >= 3)
-                        yield return line;
-                    line = new HorizontalLine() { Position = new Point(x, y), Length = 1 };
-                    color = Cells[x][y].CurrentChip.Color;
-                }
-            }
-            if (line.Length >= 3)
-                yield return line;
         }
 
         private Vector2 GetPosition(int x, int y)
