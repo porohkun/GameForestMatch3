@@ -88,7 +88,7 @@ namespace GameForestMatch3.Core
 
         protected internal sealed override void Update(GameTime gameTime)
         {
-            if (!Enabled) return;
+            if (!Enabled || !Updatable) return;
             OnUpdate(gameTime);
             foreach (var child in _children)
                 child.Update(gameTime);
@@ -96,7 +96,7 @@ namespace GameForestMatch3.Core
 
         protected internal sealed override void Draw(GameTime gameTime)
         {
-            if (!Enabled) return;
+            if (!Enabled || !Drowable) return;
             OnDraw(gameTime);
             foreach (var child in _children)
             {

@@ -303,6 +303,7 @@ namespace GameForestMatch3
                             new DisappearEffect(chip.Renderer).Play(() =>
                             {
                                 Remove(chip.Renderer);
+                                Score++;
                                 OnDestroy();
                             });
                             _destroyingChips += 2;
@@ -328,6 +329,7 @@ namespace GameForestMatch3
                             new DisappearEffect(chip.Renderer).Play(() =>
                             {
                                 Remove(chip.Renderer);
+                                Score++;
                                 OnDestroy();
                             });
                             _destroyingChips += 2;
@@ -353,6 +355,7 @@ namespace GameForestMatch3
                             new DisappearEffect(chip.Renderer).Play(() =>
                             {
                                 Remove(chip.Renderer);
+                                Score++;
                                 OnDestroy();
                             });
                             break;
@@ -372,6 +375,7 @@ namespace GameForestMatch3
                                 new DisappearEffect(chip.Renderer).Play(() =>
                                 {
                                     Remove(chip.Renderer);
+                                    Score++;
                                     OnDestroy();
                                 });
                                 for (int x = point.X - 1; x <= point.X + 1; x++)
@@ -491,11 +495,11 @@ namespace GameForestMatch3
 
         private IEnumerator<float> ListenFirstClick()
         {
-            while (true)
+            while (Updatable)
             {
-                while (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                while (Updatable && Mouse.GetState().LeftButton == ButtonState.Pressed)
                     yield return 0;
-                while (Mouse.GetState().LeftButton == ButtonState.Released)
+                while (Updatable && Mouse.GetState().LeftButton == ButtonState.Released)
                     yield return 0;
                 var pos = GetCellPos(Mouse.GetState().Position);
                 if (!CheckInBorder(pos))
@@ -510,11 +514,11 @@ namespace GameForestMatch3
 
         private IEnumerator<float> ListenSecondClick(Point selectedCell)
         {
-            while (true)
+            while (Updatable)
             {
-                while (Mouse.GetState().LeftButton == ButtonState.Pressed)
+                while (Updatable && Mouse.GetState().LeftButton == ButtonState.Pressed)
                     yield return 0;
-                while (Mouse.GetState().LeftButton == ButtonState.Released)
+                while (Updatable && Mouse.GetState().LeftButton == ButtonState.Released)
                     yield return 0;
                 var pos = GetCellPos(Mouse.GetState().Position);
                 if (!CheckInBorder(pos))

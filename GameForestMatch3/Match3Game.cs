@@ -58,9 +58,9 @@ namespace GameForestMatch3
 
             PageManager.CreateInstance(_renderCache, this);
             PageManager.Push<StartPage>();
-            
+
             font = Resources.Get<SpriteFont>("candara");
-            
+
         }
 
         protected override void UnloadContent()
@@ -81,16 +81,16 @@ namespace GameForestMatch3
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            
+
             OnDraw?.Invoke(gameTime);
 
             _renderCache.RenderCached(_spriteBatch);
-            
+
             tps.Tick(gameTime.TotalGameTime);
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
-            _spriteBatch.DrawString(font, tps.ToString(), new Vector2(10, 10), Color.Black);
+            _spriteBatch.DrawString(font, "FPS:" + tps, new Vector2(10, 10), Color.Black);
             _spriteBatch.End();
-            
+
             base.Draw(gameTime);
         }
     }

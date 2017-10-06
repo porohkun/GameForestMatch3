@@ -32,7 +32,8 @@ namespace GameForestMatch3.Core
                 }
                 rend.Render(spriteBatch);
             }
-            spriteBatch.End();
+            if (_renderers.Count > 0)
+                spriteBatch.End();
 
             _renderers.Clear();
         }

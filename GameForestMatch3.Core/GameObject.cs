@@ -13,6 +13,8 @@ namespace GameForestMatch3.Core
         protected RenderCache RenderCache;
 
         public bool Enabled { get; set; }
+        public bool Updatable { get; set; } = true;
+        public bool Drowable { get; set; } = true;
 
         public GameObject(RenderCache renderCache)
         {

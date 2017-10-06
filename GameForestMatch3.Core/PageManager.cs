@@ -41,7 +41,8 @@ namespace GameForestMatch3.Core
         private T PushInternal<T>() where T : BasePage
         {
             var type = typeof(T);
-            var page = PopInternal<T>() ?? CreatePage<T>();
+            PopInternal<T>();
+            var page =  CreatePage<T>();
             Add(page);
             SwitchPagesActivity();
             return page;
