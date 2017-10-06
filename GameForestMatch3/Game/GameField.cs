@@ -71,7 +71,7 @@ namespace GameForestMatch3
         private ButtonState prev = ButtonState.Released;
         protected override void OnUpdate(GameTime gameTime)
         {
-            var state = Mouse.GetState().LeftButton;
+            var state = Mouse.GetState().RightButton;
             if (state == ButtonState.Pressed && prev == ButtonState.Released)
             {
                 var pos = GetCellPos(Mouse.GetState().Position);
@@ -493,9 +493,9 @@ namespace GameForestMatch3
         {
             while (true)
             {
-                while (Mouse.GetState().RightButton == ButtonState.Pressed)
+                while (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     yield return 0;
-                while (Mouse.GetState().RightButton == ButtonState.Released)
+                while (Mouse.GetState().LeftButton == ButtonState.Released)
                     yield return 0;
                 var pos = GetCellPos(Mouse.GetState().Position);
                 if (!CheckInBorder(pos))
@@ -512,9 +512,9 @@ namespace GameForestMatch3
         {
             while (true)
             {
-                while (Mouse.GetState().RightButton == ButtonState.Pressed)
+                while (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     yield return 0;
-                while (Mouse.GetState().RightButton == ButtonState.Released)
+                while (Mouse.GetState().LeftButton == ButtonState.Released)
                     yield return 0;
                 var pos = GetCellPos(Mouse.GetState().Position);
                 if (!CheckInBorder(pos))
