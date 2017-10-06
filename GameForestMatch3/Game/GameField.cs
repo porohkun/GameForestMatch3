@@ -17,14 +17,18 @@ namespace GameForestMatch3
     {
         private Vector2 _position;
         private Vector2 _step { get; }
+        private Rectf _rect { get; }
         public int Width { get; }
         public int Height { get; }
         public Cell[][] Cells { get; }
         public Dispencer[] Dispensers { get; }
-        public int WaitingCells { get; private set; }
-        public bool Ready => WaitingCells == 0;
-        public int DestroyingChips { get; private set; }
-        public int AppearingChips { get; private set; }
+
+        public int Score { get; private set; }
+
+        private int _waitingCells;
+        private bool _ready => _waitingCells == 0;
+        private int _destroyingChips;
+        private int _appearingChips;
 
         public GameField(RenderCache renderCache, int width, int height, Rectf rect) : base(renderCache)
         {
@@ -32,9 +36,10 @@ namespace GameForestMatch3
             Height = height;
             _position = rect.Position;
             _step = new Vector2(rect.Width / width, rect.Height / height);
+            _rect = rect;
             Cells = new Cell[Width][];
             Dispensers = new Dispencer[Width];
-            WaitingCells = Width * Height;
+            _waitingCells = Width * Height;
 
             for (int x = 0; x < width; x++)
             {
@@ -77,8 +82,8 @@ namespace GameForestMatch3
                     c++;
                     if (c == 4)
                         c = 0;
-                    ShowNewChip(new Chip(this, RenderCache, chip.Color, (ChipBonus) c), pos);
-                    AppearingChips--;
+                    ShowNewChip(new Chip(this, RenderCache, chip.Color, (ChipBonus)c), pos);
+                    _appearingChips--;
                     Remove(chip.Renderer);
                 }
             }
@@ -87,9 +92,9 @@ namespace GameForestMatch3
 
         private void GameField_ChipArrived(int x, int y)
         {
-            WaitingCells--;
+            _waitingCells--;
 
-            if (Ready)
+            if (_ready)
                 CheckCombos();
         }
 
@@ -231,12 +236,12 @@ namespace GameForestMatch3
                     for (int y = max[x]; y >= 0; y--)
                         if (!Cells[x][y].Empty)
                         {
-                            WaitingCells++;
+                            _waitingCells++;
                             Dispensers[x].FallChip(Cells[x][y].CurrentChip, y);
                         }
                     for (int i = 0; i < news[x]; i++)
                     {
-                        WaitingCells++;
+                        _waitingCells++;
                         Dispensers[x].Dispence(new Chip(this, RenderCache));
                     }
                 }
@@ -280,7 +285,7 @@ namespace GameForestMatch3
             chip.Renderer.Size = _step;
             chip.Renderer.Position = GetPosition(pos.X, pos.Y);
             Cells[pos.X][pos.Y].CurrentChip = chip;
-            AppearingChips++;
+            _appearingChips++;
         }
 
         private void DestroyChip(Point point)
@@ -289,11 +294,59 @@ namespace GameForestMatch3
             var chip = cell.CurrentChip;
             if (chip != null)
             {
-                DestroyingChips++;
+                _destroyingChips++;
                 switch (chip.Bonus)
                 {
                     case ChipBonus.HorLine:
+                        {
+                            cell.CurrentChip = null;
+                            new DisappearEffect(chip.Renderer).Play(() =>
+                            {
+                                Remove(chip.Renderer);
+                                OnDestroy();
+                            });
+                            _destroyingChips += 2;
+                            var left = AddComponent(new SpriteRenderer(RenderCache, "left-destroyer")
+                            {
+                                SortingLayer = SortingLayer.GetLayer("effects"),
+                                Position = GetPosition(point.X, point.Y) - _step.Scale(0.25f, 0f),
+                                Size = _step / 2f,
+                            });
+                            var right = AddComponent(new SpriteRenderer(RenderCache, "right-destroyer")
+                            {
+                                SortingLayer = SortingLayer.GetLayer("effects"),
+                                Position = GetPosition(point.X, point.Y) + _step.Scale(0.25f, 0f),
+                                Size = _step / 2f,
+                            });
+                            Coroutine.Start(this, LaunchDestroyer(left, new Vector2(-1f, 0f)));
+                            Coroutine.Start(this, LaunchDestroyer(right, new Vector2(1f, 0f)));
+                            break;
+                        }
                     case ChipBonus.VerLine:
+                        {
+                            cell.CurrentChip = null;
+                            new DisappearEffect(chip.Renderer).Play(() =>
+                            {
+                                Remove(chip.Renderer);
+                                OnDestroy();
+                            });
+                            _destroyingChips += 2;
+                            var top = AddComponent(new SpriteRenderer(RenderCache, "top-destroyer")
+                            {
+                                SortingLayer = SortingLayer.GetLayer("effects"),
+                                Position = GetPosition(point.X, point.Y) - _step.Scale(0f, 0.25f),
+                                Size = _step / 2f,
+                            });
+                            var bottom = AddComponent(new SpriteRenderer(RenderCache, "bottom-destroyer")
+                            {
+                                SortingLayer = SortingLayer.GetLayer("effects"),
+                                Position = GetPosition(point.X, point.Y) + _step.Scale(0f, 0.25f),
+                                Size = _step / 2f,
+                            });
+                            Coroutine.Start(this, LaunchDestroyer(top, new Vector2(0f, -1f)));
+                            Coroutine.Start(this, LaunchDestroyer(bottom, new Vector2(0f, 1f)));
+                            break;
+                        }
                     case ChipBonus.None:
                         {
                             cell.CurrentChip = null;
@@ -332,22 +385,46 @@ namespace GameForestMatch3
             }
         }
 
+        private IEnumerator<float> LaunchDestroyer(SpriteRenderer renderer, Vector2 direction)
+        {
+            var pos = renderer.Position;
+            var cellpos = GetCellPos(pos);
+            while (_rect.Contains(pos))
+            {
+                var deltaT = (float)Coroutine.Time.ElapsedGameTime.TotalSeconds;
+                pos += direction * deltaT * 500f;
+                renderer.Position = pos;
+
+                var newCellpos = GetCellPos(pos);
+                if (cellpos != newCellpos)
+                {
+                    if (CheckInBorder(newCellpos))
+                        DestroyChip(newCellpos);
+                    cellpos = newCellpos;
+                }
+
+                yield return 0f;
+            }
+            Remove(renderer);
+            OnDestroy();
+        }
+
         private void OnAppear(int count = 1)
         {
-            AppearingChips -= count;
-            if (DestroyingChips > 0)
+            _appearingChips -= count;
+            if (_destroyingChips > 0)
                 return;
-            if (AppearingChips > 0)
+            if (_appearingChips > 0)
                 return;
             DispenseAndDropDown();
         }
 
         private void OnDestroy(int count = 1)
         {
-            DestroyingChips -= count;
-            if (DestroyingChips > 0)
+            _destroyingChips -= count;
+            if (_destroyingChips > 0)
                 return;
-            if (AppearingChips > 0)
+            if (_appearingChips > 0)
                 return;
             DispenseAndDropDown();
         }
@@ -363,7 +440,7 @@ namespace GameForestMatch3
                     if (stable && cell.Ready) continue;
                     stable = false;
                     cell.Ready = false;
-                    WaitingCells++;
+                    _waitingCells++;
                     if (cell.Empty)
                         Dispensers[x].Dispence(new Chip(this, RenderCache));
                     else
@@ -516,6 +593,11 @@ namespace GameForestMatch3
         }
 
         private Point GetCellPos(Point mousePos)
+        {
+            return GetCellPos(new Vector2(mousePos.X, mousePos.Y));
+        }
+
+        private Point GetCellPos(Vector2 mousePos)
         {
             var pos = new Vector2(mousePos.X, mousePos.Y) - _position - _step / 2f;
             return new Point(Mathf.RoundToInt(pos.X / _step.X), Mathf.RoundToInt(pos.Y / _step.Y));
